@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
+    "@miblanchard/react-native-slider": "^2.3.1",
+    "@react-native-community/slider": "4.4.2",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
     "@unimodules/core": "^7.1.2",
