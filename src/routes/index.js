@@ -7,20 +7,27 @@ import { SCREEN_WIDTH } from "../theme/theme";
 import MusicController from "../screens/MusicController";
 import Musics from "../screens/Musics";
 import Music from "../components/Music";
+import Splash from "../screens/Splash";
 
 const Stack = createNativeStackNavigator();
 
 export default function NavigationRoot() {
-  const { music, bgMusicInfo, stopSound } = useContextProvider();
+  const { music, bgMusicInfo, stopSound, backgroudMusicState } =
+    useContextProvider();
 
   return (
     <NavigationContainer>
-      {/* {music && (
+      {music && backgroudMusicState && (
         <View style={styles.bottom_container}>
-          <Music item={bgMusicInfo} show={true} />
+          <Music item={bgMusicInfo} musicController={true} directPlay={false} />
         </View>
-      )} */}
+      )}
       <Stack.Navigator>
+        <Stack.Screen
+          name="Splash"
+          component={Splash}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Music"
           component={Musics}

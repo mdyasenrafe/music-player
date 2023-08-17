@@ -7,6 +7,8 @@ export default function ConfigContextProvider({ children }) {
   const [music, setMusic] = useState();
   const [isPlay, setIsPlay] = useState(false);
   const [bgMusicInfo, setBgMusicInfo] = useState();
+  const [backgroudMusicState, setBackgroudMusicState] = useState(false);
+  const [artists, setArtists] = useState([]);
 
   const stopSound = async () => {
     await music.stopAsync();
@@ -36,6 +38,10 @@ export default function ConfigContextProvider({ children }) {
     bgMusicInfo,
     setBgMusicInfo,
     playSound,
+    backgroudMusicState,
+    setBackgroudMusicState,
+    artists,
+    setArtists,
   };
 
   return (

@@ -5,8 +5,8 @@ import OwnText from "./text/OwnText";
 import { useNavigation } from "@react-navigation/native";
 import { secondToMin } from "../utils/MinFunction";
 
-export default function Music({ item, show, musics, index }) {
-  const { playSound, isPlay, stopSound } = useContextProvider();
+export default function Music({ item, musicController, index, directPlay }) {
+  const { playSound, isPlay, stopSound, musics } = useContextProvider();
   const navigation = useNavigation();
 
   return (
@@ -14,7 +14,7 @@ export default function Music({ item, show, musics, index }) {
       style={[
         styles.songItem,
         {
-          marginBottom: show ? 0 : 16,
+          marginBottom: musicController ? 0 : 16,
         },
       ]}
       onPress={() =>
@@ -22,6 +22,7 @@ export default function Music({ item, show, musics, index }) {
           music: item,
           musics: musics,
           index: index,
+          directPlay: directPlay,
         })
       }
     >
@@ -38,7 +39,7 @@ export default function Music({ item, show, musics, index }) {
           <OwnText
             preset="p"
             style={{
-              color: show ? "black" : "black",
+              color: musicController ? "black" : "black",
             }}
           >
             {item?.title ? item?.title : item?.filename}
@@ -74,7 +75,7 @@ export default function Music({ item, show, musics, index }) {
             </OwnText>
           </View>
         </View>
-        {show && (
+        {musicController && (
           <Feather
             name={isPlay ? "pause-circle" : "play-circle"}
             size={30}

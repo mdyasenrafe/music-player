@@ -13,14 +13,26 @@ export default function MusicController({ navigation, route }) {
   const musics = route.params.musics;
   const length = musics.length;
   const index = route.params.index;
+  const directPlay = route?.params?.directPlay;
   const [currentIndex, setCurrentIndex] = useState(index);
   const [currentItem, setCurrentItem] = useState(item);
-  const { playSound, isPlay, setIsPlay, stopSound, music } =
-    useContextProvider();
+  const {
+    playSound,
+    isPlay,
+    setIsPlay,
+    stopSound,
+    music,
+    setBackgroudMusicState,
+  } = useContextProvider();
   const [musicDuration, setMusicDuration] = useState(0);
+  useEffect(() => {
+    if (directPlay) {
+      playSound(item);
+    }
+  }, [directPlay]);
 
   useEffect(() => {
-    playSound(item);
+    setBackgroudMusicState(false);
   }, []);
 
   useEffect(() => {
@@ -53,7 +65,10 @@ export default function MusicController({ navigation, route }) {
           name="arrow-back"
           size={24}
           color="black"
-          onPress={() => navigation.goBack()}
+          onPress={() => {
+            navigation.goBack();
+            setBackgroudMusicState(true);
+          }}
         />
         <Feather name="chevron-down" size={24} color="black" />
       </View>
@@ -119,10 +134,22 @@ export default function MusicController({ navigation, route }) {
             alignItems: "center",
           }}
         >
-          <Feather name="skip-back" size={24} color="black" />
+          {currentIndex !== 0 && (
+            <Feather
+              name="skip-back"
+              size={24}
+              color="black"
+              onPress={() => {
+                setMusicDuration(0);
+                setCurrentIndex(currentIndex - 1);
+                playSound(musics[currentIndex - 1]);
+                setCurrentItem(musics[currentIndex - 1]);
+              }}
+            />
+          )}
           <Feather
             onPress={async () => {
-              await setMusicDuration(musicDuration - 10000);
+              setMusicDuration(musicDuration - 10000);
               music.setPositionAsync(musicDuration * 1000 - 10000);
             }}
             name="rotate-ccw"
@@ -161,6 +188,7 @@ export default function MusicController({ navigation, route }) {
             size={24}
             color="black"
             onPress={() => {
+              setMusicDuration(0);
               setCurrentIndex(currentIndex + 1);
               playSound(musics[currentIndex + 1]);
               setCurrentItem(musics[currentIndex + 1]);

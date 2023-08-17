@@ -1,77 +1,15 @@
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import * as MediaLibrary from "expo-media-library";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import MusicInfo from "expo-music-info";
 import { Typography } from "../theme/Typography";
 import useContextProvider from "../context/useContextProvider";
 import Music from "../components/Music";
+import OwnText from "../components/text/OwnText";
 
 export default function Musics() {
-  const [musics, setMusics] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
 
-  const { music, setMusic, setBgMusicInfo, setIsPlay } = useContextProvider();
-
-  useEffect(() => {
-    getPermissionAsync();
-  }, []);
-
-  const getPermissionAsync = async () => {
-    setLoading(true);
-    const permission = await MediaLibrary.getPermissionsAsync();
-    if (permission.granted) {
-      let media = await MediaLibrary.getAssetsAsync({
-        mediaType: "audio",
-      });
-      media = await MediaLibrary.getAssetsAsync({
-        mediaType: "audio",
-        first: media.totalCount,
-      });
-
-      const songsWithArtistInfo = await Promise.all(
-        media.assets.map(async (song) => {
-          const { duration, uri, filename } = song;
-          let metadata = await MusicInfo.getMusicInfoAsync(song.uri, {
-            title: true,
-            artist: true,
-            album: true,
-            genre: true,
-            picture: true,
-          });
-
-          return {
-            ...metadata,
-            duration,
-            uri,
-            filename,
-          };
-        })
-      )
-        .then((res) => {
-          return res;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      setMusics(songsWithArtistInfo);
-
-      setLoading(false);
-    }
-    if (!permission.granted && permission.canAskAgain) {
-      setLoading(false);
-      const { status, canAskAgain } =
-        await MediaLibrary.requestPermissionsAsync();
-    }
-  };
+  const { music, setIsPlay, musics, artists } = useContextProvider();
 
   const tabDatas = ["Suggested", "Songs", "Artists", "Genres"];
 
@@ -93,7 +31,7 @@ export default function Musics() {
       >
         {tabDatas.map((tab, index) => (
           <TouchableOpacity key={index} onPress={() => setSelectedTab(index)}>
-            <Text
+            <OwnText
               style={{
                 marginRight: 16,
                 fontSize: 16,
@@ -103,26 +41,24 @@ export default function Musics() {
               }}
             >
               {tab}
-            </Text>
+            </OwnText>
           </TouchableOpacity>
         ))}
       </View>
-      <ScrollView>
-        {loading ? (
-          <View style={styles.loading_container}>
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
-        ) : (
-          musics.map((music, index) => (
-            <Music
-              key={index}
-              item={music}
-              show={false}
-              musics={musics}
-              index={index}
-            />
-          ))
-        )}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {selectedTab === 1
+          ? musics.map((music, index) => (
+              <Music
+                key={index}
+                item={music}
+                musicController={false}
+                index={index}
+                directPlay={true}
+              />
+            ))
+          : Object.keys(artists).map((artist, index) => (
+              <OwnText>{artist}</OwnText>
+            ))}
       </ScrollView>
     </SafeAreaView>
   );
